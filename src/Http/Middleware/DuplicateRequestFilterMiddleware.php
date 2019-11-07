@@ -29,7 +29,7 @@ class DuplicateRequestFilterMiddleware
         }
 
         //生成键的方法由用户定义，同一个键表示同一个锁
-        $key = call_user_func([$this, $genKeyMethod, $request]);
+        $key = call_user_func([$this, $genKeyMethod], $request);
 
         $lockRes = DistributedLockService::lock($key, $expireMilliseconds, $connection);
         if ($lockRes === null) { //拿不到锁
