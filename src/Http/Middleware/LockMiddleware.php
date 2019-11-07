@@ -1,9 +1,10 @@
 <?php
 
-namespace LaravelPlugins\Middleware;
+namespace App\Http\Middleware;
 
 use Closure;
 use Illuminate\Support\Facades\Redis;
+use App\Services\LockService;
 
 /**
  * 分布式去重锁
@@ -28,11 +29,8 @@ class LockMiddleware
 
         //生成键的方法由用户定义，同一个键表示同一个锁
         $key = $genUniqueKey($request);
-        $redis = Redis::connection($connection);
 
-        //NX：当键值未设置时才可以设置成功，否则设置不成功（返回nil）。
-        //PX：键的过期时间，避免死锁。
-        $lockRes = $redis->set($key, '1', 'PX', $expireMilliseconds, 'NX');
+        $lockRes = LockService::lock($key, $expireMilliseconds, $connection);
         if ($lockRes === null) { //拿不到锁
             throw new \Exception("repeated request");
         }
@@ -40,7 +38,7 @@ class LockMiddleware
         $next($request);
 
         //请求结束后，解锁
-        $redis->del($key);
+        LockService::unlock($key, $connection);
 
         return;
     }
