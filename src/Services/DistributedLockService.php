@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Redis;
 /**
  * 分布式锁
  */
-class LockService
+class DistributedLockService
 {
 
     /**
@@ -21,9 +21,6 @@ class LockService
      */
     public static function lock($key, $milliseconds, $connection = 'default')
     {
-        /**
-         * @var \Illuminate\Redis\Connections\Connection $redis
-         */
         $redis = Redis::connection($connection);
         //NX：当键值未设置时才可以设置成功，否则设置不成功（返回nil）。
         //PX：键的过期时间，避免死锁。
