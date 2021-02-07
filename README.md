@@ -7,3 +7,6 @@
 
 ## Services
 - DistributedLockService: 分布式锁组件
+
+## Utils
+- StrUtil: 过滤非UTF-8字符串
